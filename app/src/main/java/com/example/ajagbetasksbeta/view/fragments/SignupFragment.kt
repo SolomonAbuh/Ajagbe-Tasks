@@ -59,7 +59,9 @@ class SignupFragment : Fragment() {
 
 
         binding.upSignBtn.setOnClickListener {
-            viewModel.register(emailEt.text.toString(), passwordEt.text.toString())
+            if (emailEt.text.toString().isNotEmpty() && passwordEt.text.toString().isNotEmpty()) {
+                viewModel.register(emailEt.text.toString(), passwordEt.text.toString())
+            }
             viewModel.checkForEmpty(
                 fullNameEt,
                 fullNameLayout,

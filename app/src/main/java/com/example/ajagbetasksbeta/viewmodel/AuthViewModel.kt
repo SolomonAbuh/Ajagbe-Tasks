@@ -53,6 +53,22 @@ class AuthViewModel() : ViewModel() {
         )
     }
 
+
+    fun checkForEmpty(
+        email: TextInputEditText,
+        emailLayout: TextInputLayout,
+        password: TextInputEditText,
+        passwordLayout: TextInputLayout,
+    ) {
+        repository.checkForEmpty(
+            email,
+            emailLayout,
+            password,
+            passwordLayout
+        )
+
+    }
+
     fun login(email: String, password: String) {
         repository.login(email, password)
     }

@@ -1,7 +1,6 @@
 package com.example.ajagbetasksbeta.repository
 
 import android.app.Application
-import android.widget.EditText
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import com.google.android.material.textfield.TextInputEditText
@@ -85,12 +84,22 @@ class AuthenticationRepository(val application: Application) {
         } else {
             confirmPasswordLayout.error = null
         }
+    }
 
-        if (fullNameLayout.error != null && emailLayout.error != null && confirmPasswordLayout.error != null
-            && passwordLayout.error != null
-        ) {
-            registerUser(email.text.toString(), password.text.toString())
-        }
+    //overLoading the function for sign in page
+    fun checkForEmpty(
+        email: TextInputEditText,
+        emailLayout: TextInputLayout,
+        password: TextInputEditText,
+        passwordLayout: TextInputLayout,
+    ) {
+        if (email.text!!.isEmpty()) emailLayout.error =
+            "Email field cannot me empty"
+        else emailLayout.error = null
+
+        if (password.text!!.isEmpty()) passwordLayout.error =
+            "Password field cannot be empty"
+        else passwordLayout.error = null
     }
 
 }
