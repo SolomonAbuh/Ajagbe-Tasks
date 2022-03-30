@@ -1,6 +1,12 @@
 package com.example.ajagbetasksbeta.view.fragments
 
+import android.app.Dialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,12 +14,13 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.ajagbetasksbeta.R
+import com.example.ajagbetasksbeta.databinding.ErrorDialogBinding
 import com.example.ajagbetasksbeta.databinding.FragmentSignBinding
 import com.example.ajagbetasksbeta.viewmodel.AuthViewModel
 
 class SignFragment : Fragment() {
-    //    private var emailValidated = false
-//    private var passwordVlidated = false
+
+    private lateinit var dialog: Dialog
     private lateinit var binding: FragmentSignBinding
     private lateinit var viewModel: AuthViewModel
 
@@ -24,6 +31,8 @@ class SignFragment : Fragment() {
             ViewModelProvider.AndroidViewModelFactory
                 .getInstance(requireActivity().application)
         ).get(AuthViewModel::class.java)
+
+        dialog = Dialog(requireActivity())
 
         viewModel.getUserData().observe(this, {
             if (it != null) {
@@ -46,53 +55,44 @@ class SignFragment : Fragment() {
         val passwordEt = binding.inPasswordEt
         val passwordLayout = binding.inPasswordLayout
 
+        val dbinding: ErrorDialogBinding =
+            ErrorDialogBinding.inflate(LayoutInflater.from(requireActivity()))
+        dialog.setContentView(dbinding.root)
+        val back = ColorDrawable(Color.TRANSPARENT.hashCode())
+        val inset = InsetDrawable(back, 35)
+        dialog.window?.setBackgroundDrawable(inset)
+
+
+
         binding.inSignBtn.setOnClickListener {
             if (emailEt.text.toString().isNotEmpty() && passwordEt.text.toString().isNotEmpty()) {
                 viewModel.login(emailEt.text.toString(), passwordEt.text.toString())
+                viewModel.getFailedLogin().observe(requireActivity(), {
+                    if (it == true) {
+                        dbinding.errorText.text = viewModel.getFailedLoginText().value
+                        displayErrorDialog()
+                    }
+                })
             }
             viewModel.checkForEmpty(emailEt, emailLayout, passwordEt, passwordLayout)
+
         }
+
 
 
         binding.inSignupText.setOnClickListener {
             findNavController().navigate(R.id.goToSignup)
         }
-
-        // validation()
-
         return binding.root
     }
 
+    private fun displayErrorDialog() {
+        Handler(Looper.getMainLooper()).postDelayed({
+            dialog.dismiss()
+        }, 2500)
+        dialog.show()
 
-    /*private fun validation(){
-        binding.inEmailEt.addTextChangedListener(object: TextWatcher{
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (Patterns.EMAIL_ADDRESS.matcher(binding.inEmailEt.text.toString()).matches()){
-                    emailValidated = true
-                    binding.inEmailLayout.error = null
-                }else{
-                    binding.inEmailLayout.error = "Not a valid email"
-                }
-            }
-            override fun afterTextChanged(s: Editable?) {}
-        })
-        binding.inPasswordEt.addTextChangedListener(object: TextWatcher{
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (binding.inPasswordEt.text!!.isNotEmpty()){
-                    binding.inPasswordLayout.error = null
-                }
-            }
-            override fun afterTextChanged(s: Editable?) {}
-        })
     }
-    private fun checkForEmpty(){
-        if(binding.inEmailEt.text!!.isEmpty())binding.inEmailLayout.error = "Email field cannot me empty"
-        else binding.inEmailLayout.error = null
 
-        if (binding.inPasswordEt.text!!.isEmpty()) binding.inPasswordLayout.error = "Password field cannot be empty"
-        else binding.inPasswordLayout.error = null
-    }*/
 
 }

@@ -17,6 +17,9 @@
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_signFragment_to_setupProfile"
+            app:destination="@id/setupProfile" />
     </fragment>
     <fragment
         android:id="@+id/signupFragment"
@@ -43,5 +46,10 @@
             android:id="@+id/action_homeFragment_to_signFragment"
             app:destination="@id/signFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/setupProfile"
+        android:name="com.example.ajagbetasksbeta.view.fragments.SetupProfile"
+        android:label="fragment_setup_profile"
+        tools:layout="@layout/fragment_setup_profile" />
 
 </navigation>

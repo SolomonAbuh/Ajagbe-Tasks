@@ -1,9 +1,12 @@
 package com.example.ajagbetasksbeta.view.fragments
 
+import android.app.Dialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.util.Patterns
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,13 +14,12 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.ajagbetasksbeta.R
+import com.example.ajagbetasksbeta.databinding.ErrorDialogBinding
 import com.example.ajagbetasksbeta.databinding.FragmentSignupBinding
 import com.example.ajagbetasksbeta.viewmodel.AuthViewModel
 
 class SignupFragment : Fragment() {
-    private var emailValidated = false
-    private var fullNameValidated = false
-    private var passwordValidated = false
+    private lateinit var dialog: Dialog
     private lateinit var binding: FragmentSignupBinding
     private lateinit var viewModel: AuthViewModel
 
@@ -32,10 +34,12 @@ class SignupFragment : Fragment() {
         ).get(AuthViewModel::class.java)
 
 
+        dialog = Dialog(requireActivity())
+
         viewModel.getUserData().observe(this,
             {
                 if (it != null) {
-                    findNavController().navigate(R.id.action_signupFragment_to_homeFragment)
+                    findNavController().navigate(R.id.setupProfile)
                 }
             })
 
@@ -46,6 +50,8 @@ class SignupFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
+        val dbinding: ErrorDialogBinding =
+            ErrorDialogBinding.inflate(LayoutInflater.from(requireActivity()))
         binding = FragmentSignupBinding.inflate(layoutInflater)
         val emailEt = binding.upEmailEt
         val emailLayout = binding.upEmailLayout
@@ -57,11 +63,39 @@ class SignupFragment : Fragment() {
         val confirmPasswordLayout = binding.upConfirmPasswordLayout
 
 
+        dialog.setContentView(dbinding.root)
+        val back = ColorDrawable(Color.TRANSPARENT.hashCode())
+        val inset = InsetDrawable(back, 35)
+        dialog.window?.setBackgroundDrawable(inset)
+
+
+
+        viewModel.validation(
+            fullNameEt,
+            fullNameLayout,
+            emailEt,
+            emailLayout,
+            passwordEt,
+            passwordLayout,
+            confirmPasswordEt,
+            confirmPasswordLayout
+        )
+
 
         binding.upSignBtn.setOnClickListener {
-            if (emailEt.text.toString().isNotEmpty() && passwordEt.text.toString().isNotEmpty()) {
-                viewModel.register(emailEt.text.toString(), passwordEt.text.toString())
-            }
+
+            viewModel.validation(
+                fullNameEt,
+                fullNameLayout,
+                emailEt,
+                emailLayout,
+                passwordEt,
+                passwordLayout,
+                confirmPasswordEt,
+                confirmPasswordLayout
+            )
+
+
             viewModel.checkForEmpty(
                 fullNameEt,
                 fullNameLayout,
@@ -72,70 +106,36 @@ class SignupFragment : Fragment() {
                 confirmPasswordEt,
                 confirmPasswordLayout
             )
+
+            if (viewModel.getFullNameValidated().value == true
+                && viewModel.getPasswordValidated().value == true
+                && viewModel.getEmailValidated().value == true
+            ) {
+
+                if (emailEt.text.toString().isNotEmpty() && passwordEt.text.toString()
+                        .isNotEmpty()
+                ) {
+                    viewModel.register(emailEt.text.toString(), passwordEt.text.toString())
+                    viewModel.getFailedRegister().observe(requireActivity(), {
+                        if (it == true) {
+                            dbinding.errorText.text = viewModel.getFailedRegisterText().value
+                            displayErrorDialog()
+                        }
+                    })
+                }
+            }
+
         }
 
         return binding.root
     }
 
+    private fun displayErrorDialog() {
+        Handler(Looper.getMainLooper()).postDelayed({
+            dialog.dismiss()
+        }, 2500)
+        dialog.show()
 
-    private fun validation() {
-        binding.upFullnameEt.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (binding.upFullnameEt.text!!.isNotEmpty()) {
-                    fullNameValidated = true
-                    binding.upFullnameLayout.error = null
-                } else {
-                    fullNameValidated = false
-                }
-            }
-
-            override fun afterTextChanged(s: Editable?) {}
-        })
-
-        binding.upEmailEt.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (Patterns.EMAIL_ADDRESS.matcher(binding.upEmailEt.text.toString()).matches()) {
-                    emailValidated = true
-                    binding.upEmailLayout.error = null
-                } else {
-                    binding.upEmailLayout.error = "Not a valid email"
-                    emailValidated = false
-                }
-            }
-
-            override fun afterTextChanged(s: Editable?) {}
-        })
-
-        binding.upPasswordEt.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (binding.upPasswordEt.text.toString().length <= 8) binding.upPasswordLayout.error =
-                    "Password must be 8 characters or more"
-                else binding.upPasswordLayout.error = null
-            }
-
-            override fun afterTextChanged(s: Editable?) {}
-        })
-        binding.upConfirmPasswordEt.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if ((binding.upPasswordEt.text.toString() != binding.upConfirmPasswordEt.text.toString())
-                    && binding.upPasswordEt.text!!.length <= 8
-                ) {
-                    binding.upConfirmPasswordLayout.error = "Password Don't match"
-                    passwordValidated = false
-                } else {
-                    binding.upConfirmPasswordLayout.error = null
-                    passwordValidated = true
-                }
-
-            }
-
-            override fun afterTextChanged(s: Editable?) {}
-        })
     }
-
 
 }
