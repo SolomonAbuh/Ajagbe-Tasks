@@ -69,6 +69,10 @@ class SignupFragment : Fragment() {
         dialog.window?.setBackgroundDrawable(inset)
 
 
+        binding.inSignText.setOnClickListener {
+            findNavController().navigate(R.id.signFragment)
+        }
+
 
         viewModel.validation(
             fullNameEt,

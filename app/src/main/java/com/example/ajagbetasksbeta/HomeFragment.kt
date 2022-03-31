@@ -39,11 +39,10 @@ class HomeFragment : Fragment() {
     ): View {
         binding = FragmentHomeBinding.inflate(layoutInflater)
 
-        binding.userEmail.text = viewModel.getUserData().value?.email
+
 
         binding.signOutBtn.setOnClickListener {
             viewModel.signOut()
-
         }
 
 

@@ -26,7 +26,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="10dp"
         android:fontFamily="@font/poppins_regular"
-        android:text="Help us know you better by filling the \nneccescary information"
+        android:text="Help us know you better by filling the \nnecessary information"
         android:textColor="@color/colorPrimaryDark"
         android:textSize="15sp"
         app:layout_constraintStart_toStartOf="parent"

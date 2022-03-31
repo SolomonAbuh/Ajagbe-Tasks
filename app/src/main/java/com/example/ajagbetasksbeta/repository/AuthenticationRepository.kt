@@ -1,6 +1,5 @@
 package com.example.ajagbetasksbeta.repository
 
-import android.app.Application
 import android.content.ContentValues.TAG
 import android.text.Editable
 import android.text.TextWatcher
@@ -14,7 +13,7 @@ import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
-class AuthenticationRepository(val application: Application) {
+class AuthenticationRepository {
     private var passwordValidated: MutableLiveData<Boolean> = MutableLiveData<Boolean>()
     private var fullNameValidated: MutableLiveData<Boolean> = MutableLiveData<Boolean>()
     private var emailValidated: MutableLiveData<Boolean> = MutableLiveData<Boolean>()
@@ -22,7 +21,6 @@ class AuthenticationRepository(val application: Application) {
     private val failedLoginText: MutableLiveData<String> = MutableLiveData<String>()
     private val failedRegister: MutableLiveData<Boolean> = MutableLiveData<Boolean>()
     private val failedRegisterText: MutableLiveData<String> = MutableLiveData<String>()
-
     private var firbaseMutableLiveData: MutableLiveData<FirebaseUser> =
         MutableLiveData<FirebaseUser>()
     private var userLoggedOutMutableLiveData: MutableLiveData<Boolean> = MutableLiveData<Boolean>()
@@ -45,6 +43,7 @@ class AuthenticationRepository(val application: Application) {
                 failedRegisterText.postValue(it.exception?.message)
                 failedRegister.postValue(true)
             }
+
         }
     }
 

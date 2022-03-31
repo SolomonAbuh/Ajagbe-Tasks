@@ -1,6 +1,5 @@
 package com.example.ajagbetasksbeta.viewmodel
 
-import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.ajagbetasksbeta.repository.AuthenticationRepository
@@ -10,7 +9,7 @@ import com.google.firebase.auth.FirebaseUser
 
 class AuthViewModel() : ViewModel() {
 
-    private val repository = AuthenticationRepository(Application())
+    private val repository = AuthenticationRepository()
     private val userData: MutableLiveData<FirebaseUser> = repository.getFireBaseMutableLiveData()
     private val loggedStatus: MutableLiveData<Boolean> =
         repository.getUserLoggedOutMutableLiveData()

@@ -63,8 +63,29 @@ class SignFragment : Fragment() {
         dialog.window?.setBackgroundDrawable(inset)
 
 
+        viewModel.validation(
+            emailEt,
+            emailLayout,
+            passwordEt,
+            passwordLayout,
+        )
 
         binding.inSignBtn.setOnClickListener {
+
+            viewModel.validation(
+                emailEt,
+                emailLayout,
+                passwordEt,
+                passwordLayout,
+            )
+
+            viewModel.checkForEmpty(
+                emailEt,
+                emailLayout,
+                passwordEt,
+                passwordLayout,
+            )
+
             if (emailEt.text.toString().isNotEmpty() && passwordEt.text.toString().isNotEmpty()) {
                 viewModel.login(emailEt.text.toString(), passwordEt.text.toString())
                 viewModel.getFailedLogin().observe(requireActivity(), {
